@@ -32,7 +32,7 @@ app.post('/auth/login', (req, res) => {
       // tslint:disable-next-line:only-arrow-functions
     }, null, null,  function(err, authResponse) {
       if (err) {
-        res.status(400).send('Bad Request');
+        res.status(400).send(res);
       } else {
         res.status(200).send({token: authResponse.approval_request.uuid});
       }
@@ -45,16 +45,16 @@ app.post('/auth/login', (req, res) => {
 app.get('/auth/status', (req, res) => {
   authy.check_approval_status(req.headers.token, (err, authResponse) => {
     if (err) {
-      res.status(400).send('Bad Request.');
+      res.status(400).send(err);
     } else {
       if (authResponse.approval_request.status === 'approved') {
         res.cookie('authentication', 'super-encrypted-value-indicating-that-user-is-authenticated!', {
-          maxAge: 60 * 60,
+          maxAge: 5 * 60 * 1000,
           httpOnly: true
         });
         if (req.headers.remember === 'true') {
           res.cookie('remember', authResponse.approval_request._authy_id, {
-            maxAge: 5 * 60 * 60,
+            maxAge: 30 * 60 * 60 * 1000,
             httpOnly: true
           });
         }
